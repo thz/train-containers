@@ -1,0 +1,2 @@
+LDFLAGS=-static
+default: foo
