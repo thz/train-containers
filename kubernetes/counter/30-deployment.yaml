@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counter-depl
+spec:
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 2
+  selector:
+    matchLabels:
+      app: counter
+      env: prod
+  template:
+    metadata:
+      labels:
+        app: counter
+        env: prod
+        kind: depl
+    spec:
+      containers:
+      - name: counter
+        image: alpine
+        command:
+        - sh
+        - -c
+        - |
+          while true; do
+            echo "Deployment: $(( i+=1 ))"
+            sleep 1
+          done
+        resources:
+          requests:
+            cpu: 100m

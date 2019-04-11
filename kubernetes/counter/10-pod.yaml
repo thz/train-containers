@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: counter
+    image: alpine
+    command:
+    - sh
+    - -c
+    - |
+      trap 'echo ByeBye ; exit' TERM
+      echo Hello World
+      while true; do echo "Pod counter: $(( i+=1 ))." ; sleep 1 ; done

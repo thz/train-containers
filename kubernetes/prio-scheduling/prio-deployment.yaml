@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prio-counter-depl
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: prio-counter
+      env: prod
+  template:
+    metadata:
+      labels:
+        app: prio-counter
+        env: prod
+        kind: depl
+    spec:
+      priorityClassName: high-priority
+      containers:
+      - name: counter
+        image: alpine
+        command:
+        - sh
+        - -c
+        - |
+          while true; do
+            echo "Priority Deployment: $(( i+=1 ))"
+            sleep 1
+          done
+        resources:
+          requests:
+            cpu: 500m

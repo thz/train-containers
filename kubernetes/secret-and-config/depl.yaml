@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-config
+  labels:
+    app: hello-config
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-config
+  template:
+    metadata:
+      labels:
+        app: hello-config
+    spec:
+      initContainers:
+      - name: init1
+        image: alpine
+        command:
+        - sh
+        - -c
+        - |
+          echo "hello $SECRET1"
+          sleep 10
+        env:
+          - name: SECRET1
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: key1
+      containers:
+      - name: webserver
+        image: nginx:latest
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/config
+          name: export-config
+        ports:
+          - containerPort: 80
+      volumes:
+      - name: export-config
+        configMap:
+          name: my-configmap
