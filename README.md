@@ -1,3 +1,3 @@
-### train-docker - a snippet repository
+## train-containers - a snippet repository
 
-Just some snippets used for training sessions.
+This repository holds some snippets and examples used in trainings and workshops.
