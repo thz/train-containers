@@ -13,7 +13,8 @@
 This one has an interesting aspect. According to section CLONE_NEWPID in unshare(2):
 "The calling process is *not* moved into the new namespace. The first child created by the calling process will have the process ID 1 and will assume the role of init(1) in the new namespace."
 
-So the calling process `unshare` execs itself to become `bash`, the shell itself is in the old pid namespace, but its first child process becomes the new pid 1 (init role, child reaper). Without init new processes cannot be allocacted (signaled by ENOMEM).
+So the calling process `unshare` execs itself to become `bash`, the shell itself is in the old pid namespace, but its first child process becomes the new pid 1 (init role, child reaper). Without init new processes cannot be allocated (signaled by ENOMEM). Adding the the -f(ork) option to unshare will fork a new process before executing the shell. By doing so the shell becomes PID 1 and the issue is resolved.
+
 
 ```
 % unshare -p /bin/bash --norc
@@ -33,6 +34,15 @@ bash: fork: Cannot allocate memory
 bash: kill: (45429) - No such process
 ```
 
-Also note: `ps` is just reading `/proc` and not giving you the actual processes of the new (almost empty) pid namespace. But `kill` as a system call itself indicates correctly that the respective process does not exist in the namespace.
+Also note: `ps` is just reading `/proc` and not necessarily giving you the actual processes of the new (almost empty) pid namespace. But `kill` as a system call itself indicates correctly that the respective process does not exist in the namespace. This can be fixed by unsharing the mount namespace too and having a dedicated /proc. And unshare(1) even has options for that:
+
+```
+# unshare -fp -m --mount-proc /bin/bash --norc
+bash-4.4# ps
+   PID TTY          TIME CMD
+     1 pts/1    00:00:00 bash
+     2 pts/1    00:00:00 ps
+
+```
 
 

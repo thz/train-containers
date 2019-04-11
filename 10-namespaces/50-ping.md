@@ -1,3 +1,5 @@
+### Create a network namespace and ping into it
+```
 # create a network namespace
 ip netns add foo
 
@@ -10,8 +12,9 @@ ip link set vethA up
 
 # bring vethB up as well
 ip netns exec foo bash
-	ip addr add 192.168.0.2/24 dev vethA
-	ip link set vethA up
-	ping -c3 192.168.0.1
+  ip addr add 192.168.0.2/24 dev vethA
+  ip link set vethA up
+  ping -c3 192.168.0.1
 
 ping -c3 192.168.0.2
+```
