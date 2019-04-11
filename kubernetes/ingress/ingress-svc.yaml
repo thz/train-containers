@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    # IngressController looks at the http Host header and URL to
+    # decide where to go. So either use DNS or fake it with curl:
+    # curl --header 'Host: my.example.com' 'http://192.0.2.1/foo'
+  - host: my.example.com
+    http:
+      paths:
+      - path: /foo
+        backend:
+          serviceName: http-svc
+          servicePort: http
