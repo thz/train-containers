@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-nginx-deployment
+  labels:
+    app: simple-nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simple-nginx
+  template:
+    metadata:
+      labels:
+        app: simple-nginx
+    spec:
+      initContainers:
+      - name: content
+        image: alpine
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo Hello World > /web/index.html
+        volumeMounts:
+          - name: pod-temp
+            mountPath: /web
+      containers:
+      - name: simple-nginx
+        image: nginx
+        resources:
+          requests:
+            memory: 300M
+            cpu: 50m
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: pod-temp
+            mountPath: "/usr/share/nginx/html"
+      volumes:
+      - name: pod-temp
+        emptyDir:
+      - name: host
+        hostPath:
+          path: /var/tmp
